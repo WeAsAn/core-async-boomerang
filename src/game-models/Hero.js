@@ -16,9 +16,7 @@ class Hero {
 
   moveRight() {
     // Идём вправо.
-    if (this.isAlive && this.position) {
-      this.position += 1;
-    }
+    if (this.isAlive) this.position += 1;
   }
 
   attack() {
@@ -28,6 +26,7 @@ class Hero {
 
   die() {
     this.skin = '💀';
+    this.isAlive = false;
     console.log('YOU ARE DEAD!💀');
     process.exit();
   }
