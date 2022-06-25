@@ -29,10 +29,18 @@ class Game {
     this.enemy = new Enemy(this.trackLength);
     this.view = new View();
     this.track = [];
+    this.gold = 0;
     this.regenerateTrack();
     this.keyboard = {
       a: () => this.hero.moveLeft(),
       d: () => this.hero.moveRight(),
+      z: () => {
+        if (this.gold >= 200) {
+          this.gold -= 200;
+          this.hero.bubble = true;
+          setTimeout(() => (this.hero.bubble = false), 5000);
+        }
+      },
       space: () => {
         this.boomerang.moveRight();
         this.boomerang.position = this.hero.position + 1;
@@ -69,10 +77,25 @@ class Game {
   }
 
   check() {
-    if (this.hero.position === this.enemy.position && this.enemy.isAlive === true) {
+    if (
+      (this.hero.position === this.enemy.position &&
+        this.enemy.isAlive === true &&
+        this.hero.bubble === false) ||
+      (this.hero.position === this.enemy.position + 1 &&
+        this.enemy.isAlive === true &&
+        this.hero.bubble === false) ||
+      (this.hero.position === this.enemy.position - 1 &&
+        this.enemy.isAlive === true &&
+        this.hero.bubble === false)
+    ) {
       this.hero.die();
     }
-    if (this.enemy.position === this.boomerang.position && this.boomerang.thrown === true) {
+    if (
+      (this.enemy.position === this.boomerang.position && this.boomerang.thrown === true) ||
+      (this.enemy.position === this.boomerang.position + 1 && this.boomerang.thrown === true) ||
+      (this.enemy.position === this.boomerang.position - 1 && this.boomerang.thrown === true)
+    ) {
+      this.gold += Math.floor(Math.random() * 20);
       this.enemy.die();
     }
     if (this.boomerang.range < this.boomerang.maxRange && this.boomerang.thrown === true) {
@@ -91,7 +114,7 @@ class Game {
       this.boomerang.skin = ' ';
       this.boomerang.position = 0;
     }
-    if (!this.enemy.isAlive) {
+    if (!this.enemy.isAlive || this.enemy.position === 0) {
       this.enemy = new Enemy(this.trackLength);
     }
   }
@@ -103,7 +126,7 @@ class Game {
       this.check();
       this.enemy.moveLeft();
       this.regenerateTrack();
-      this.view.render(this.track);
+      this.view.render(this.track, this.gold);
     }, 200);
   }
 }

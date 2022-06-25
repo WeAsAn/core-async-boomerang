@@ -5,6 +5,7 @@ class Hero {
     this.skin = '🤠'; // можете использовать любые emoji '💃'
     this.position = position;
     this.isAlive = true;
+    this.bubble = false;
   }
 
   moveLeft() {
