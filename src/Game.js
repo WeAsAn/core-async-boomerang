@@ -38,7 +38,11 @@ class Game {
         if (this.gold >= 200) {
           this.gold -= 200;
           this.hero.bubble = true;
-          setTimeout(() => (this.hero.bubble = false), 5000);
+          this.hero.skin = '😎';
+          setTimeout(() => {
+            this.hero.bubble = false;
+            this.hero.skin = '🤠';
+          }, 5000);
         }
       },
       space: () => {
@@ -101,16 +105,15 @@ class Game {
     if (this.boomerang.range < this.boomerang.maxRange && this.boomerang.thrown === true) {
       this.boomerang.skin = '🌀';
       this.boomerang.moveRight();
+    } else if (
+      this.boomerang.range >= this.boomerang.maxRange &&
+      this.boomerang.range <= this.boomerang.maxRange * 2 - 1
+    ) {
+      this.boomerang.moveLeft();
     } else {
       this.boomerang.thrown = false;
     }
-    if (
-      this.boomerang.range >= this.boomerang.maxRange &&
-      this.boomerang.range <= this.boomerang.maxRange * 2
-    ) {
-      this.boomerang.moveLeft();
-    }
-    if (this.boomerang.position === this.hero.position + 1) {
+    if (this.boomerang.thrown === false) {
       this.boomerang.skin = ' ';
       this.boomerang.position = 0;
     }
