@@ -36,6 +36,7 @@ class Game {
       space: () => {
         this.boomerang.moveRight();
         this.boomerang.position = this.hero.position + 1;
+        this.boomerang.range = 0;
       },
     };
   }
@@ -77,6 +78,21 @@ class Game {
     if (this.boomerang.range < this.boomerang.maxRange && this.boomerang.thrown === true) {
       this.boomerang.skin = '🌀';
       this.boomerang.moveRight();
+    } else {
+      this.boomerang.thrown = false;
+    }
+    if (
+      this.boomerang.range >= this.boomerang.maxRange &&
+      this.boomerang.range <= this.boomerang.maxRange * 2
+    ) {
+      this.boomerang.moveLeft();
+    }
+    if (this.boomerang.position === this.hero.position + 1) {
+      this.boomerang.skin = ' ';
+      this.boomerang.position = 0;
+    }
+    if (!this.enemy.isAlive) {
+      this.enemy = new Enemy(this.trackLength);
     }
   }
 

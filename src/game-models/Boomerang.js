@@ -19,6 +19,7 @@ class Boomerang {
   moveLeft() {
     // Идём влево.
     if (this.position >= 0) {
+      this.thrown = true;
       this.position -= 1;
       this.range += 1;
     }
@@ -29,7 +30,6 @@ class Boomerang {
     this.thrown = true;
     this.position += 1;
     this.range += 1;
-    this.thrown = true;
   }
 }
 
