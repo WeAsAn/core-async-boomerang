@@ -5,22 +5,18 @@
 class Boomerang {
   constructor() {
     this.skin = ' ';
-    this.position = 0;
+    this.positionX = 0;
+    this.positionY = 5;
     this.range = 0;
     this.maxRange = 7;
     this.thrown = false;
   }
 
-  fly() {
-    this.thrown = true;
-    this.moveLeft();
-  }
-
   moveLeft() {
     // Идём влево.
-    if (this.position >= 0) {
+    if (this.positionX >= 0) {
       this.thrown = true;
-      this.position -= 1;
+      this.positionX -= 1;
       this.range += 1;
     }
   }
@@ -28,7 +24,7 @@ class Boomerang {
   moveRight() {
     // Идём вправо.
     this.thrown = true;
-    this.position += 1;
+    this.positionX += 1;
     this.range += 1;
   }
 }

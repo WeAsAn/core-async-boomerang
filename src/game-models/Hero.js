@@ -1,28 +1,24 @@
 // Наш герой.
 
 class Hero {
-  constructor({ position }) {
+  constructor({ positionX }) {
     this.skin = '🤠'; // можете использовать любые emoji '💃'
-    this.position = position;
+    this.positionX = positionX;
+    this.positionY = 5;
     this.isAlive = true;
     this.bubble = false;
   }
 
   moveLeft() {
     // Идём влево.
-    if (this.isAlive && this.position !== 0) {
-      this.position -= 1;
+    if (this.isAlive && this.positionX !== 0) {
+      this.positionX -= 1;
     }
   }
 
   moveRight() {
     // Идём вправо.
-    if (this.isAlive) this.position += 1;
-  }
-
-  attack() {
-    // Атакуем.
-    this.boomerang.fly();
+    if (this.isAlive) this.positionX += 1;
   }
 
   die() {

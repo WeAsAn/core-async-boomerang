@@ -22,9 +22,10 @@ const View = require('./View');
 // Тут будут все настройки, проверки, запуск.
 
 class Game {
-  constructor({ trackLength }) {
+  constructor({ trackLength, trackHeight }) {
     this.trackLength = trackLength;
-    this.hero = new Hero({ position: 1 }); // Герою можно аргументом передать бумеранг.
+    this.trackHeight = trackHeight;
+    this.hero = new Hero({ positionX: 1 }); // Герою можно аргументом передать бумеранг.
     this.boomerang = new Boomerang();
     this.enemy = new Enemy(this.trackLength);
     this.view = new View();
@@ -47,7 +48,7 @@ class Game {
       },
       space: () => {
         this.boomerang.moveRight();
-        this.boomerang.position = this.hero.position + 1;
+        this.boomerang.positionX = this.hero.positionX + 1;
         this.boomerang.range = 0;
       },
     };
@@ -74,30 +75,33 @@ class Game {
   regenerateTrack() {
     // Сборка всего необходимого (герой, враг(и), оружие)
     // в единую структуру данных
-    this.track = new Array(this.trackLength).fill(' ');
-    this.track[this.hero.position] = this.hero.skin;
-    this.track[this.enemy.position] = this.enemy.skin;
-    this.track[this.boomerang.position] = this.boomerang.skin;
+    this.track = [];
+    for (let i = 0; i < this.trackHeight; i += 1) {
+      this.track.push(new Array(this.trackLength).fill(' '));
+    }
+    this.track[this.hero.positionY][this.hero.positionX] = this.hero.skin;
+    this.track[this.enemy.positionY][this.enemy.positionX] = this.enemy.skin;
+    this.track[this.boomerang.positionY][this.boomerang.positionX] = this.boomerang.skin;
   }
 
   check() {
     if (
-      (this.hero.position === this.enemy.position &&
+      (this.hero.positionX === this.enemy.positionX &&
         this.enemy.isAlive === true &&
         this.hero.bubble === false) ||
-      (this.hero.position === this.enemy.position + 1 &&
+      (this.hero.positionX === this.enemy.positionX + 1 &&
         this.enemy.isAlive === true &&
         this.hero.bubble === false) ||
-      (this.hero.position === this.enemy.position - 1 &&
+      (this.hero.positionX === this.enemy.positionX - 1 &&
         this.enemy.isAlive === true &&
         this.hero.bubble === false)
     ) {
       this.hero.die();
     }
     if (
-      (this.enemy.position === this.boomerang.position && this.boomerang.thrown === true) ||
-      (this.enemy.position === this.boomerang.position + 1 && this.boomerang.thrown === true) ||
-      (this.enemy.position === this.boomerang.position - 1 && this.boomerang.thrown === true)
+      (this.enemy.positionX === this.boomerang.positionX && this.boomerang.thrown === true) ||
+      (this.enemy.positionX === this.boomerang.positionX + 1 && this.boomerang.thrown === true) ||
+      (this.enemy.positionX === this.boomerang.positionX - 1 && this.boomerang.thrown === true)
     ) {
       this.gold += Math.floor(Math.random() * 20);
       this.enemy.die();
@@ -115,7 +119,7 @@ class Game {
     }
     if (this.boomerang.thrown === false) {
       this.boomerang.skin = ' ';
-      this.boomerang.position = 0;
+      this.boomerang.positionX = 0;
     }
     if (!this.enemy.isAlive || this.enemy.position === 0) {
       this.enemy = new Enemy(this.trackLength);
@@ -134,7 +138,7 @@ class Game {
   }
 }
 
-const game = new Game({ trackLength: 32 });
+const game = new Game({ trackLength: 32, trackHeight: 20 });
 game.play();
 
 module.exports = Game;
