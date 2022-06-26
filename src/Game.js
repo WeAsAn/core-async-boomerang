@@ -16,7 +16,7 @@ class Game {
     this.hero = new Hero({ position: 1 }); // Герою можно аргументом передать бумеранг.
     this.boomerang = new Boomerang();
     this.enemy = new Enemy();
-    this.view = new View();
+    this.view = new View(this.trackLength);
     this.track = [];
     this.regenerateTrack();
   }
