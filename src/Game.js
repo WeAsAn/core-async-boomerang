@@ -1,17 +1,20 @@
 // Импортируем всё необходимое.
 // Или можно не импортировать,
 // а передавать все нужные объекты прямо из run.js при инициализации new Game().
-
+const DataBase = require('../index');
 const keypress = require('keypress');
 const Hero = require('./game-models/Hero');
 const Enemy = require('./game-models/Enemy');
 const Boomerang = require('./game-models/Boomerang');
 const View = require('./View');
+const { REAL } = require('sequelize');
 
 class Game {
   constructor({ trackLength, trackHeight }) {
+    this.name = 'безымянный герой';
     this.trackLength = trackLength;
     this.trackHeight = trackHeight;
+    this.db = new DataBase();
     this.hero = new Hero({ positionX: 1, positionY: Math.floor(this.trackHeight / 2) });
     this.boomerang = new Boomerang();
     this.enemy = new Enemy({
@@ -21,6 +24,8 @@ class Game {
     this.view = new View();
     this.track = [];
     this.gold = 0;
+    this.score = 0;
+    this.time = 0;
 
     this.regenerateTrack();
     this.keyboard = {
@@ -80,7 +85,7 @@ class Game {
     this.track[this.boomerang.positionY][this.boomerang.positionX] = this.boomerang.skin;
   }
 
-  check() {
+  async check() {
     if (
       // убийство героя
       (this.hero.positionX === this.enemy.positionX &&
@@ -96,6 +101,7 @@ class Game {
         this.hero.bubble === false &&
         this.hero.positionY === this.enemy.positionY)
     ) {
+      await this.db.addUserScore(this.name, this.score);
       this.hero.die();
     }
     if (
@@ -110,6 +116,7 @@ class Game {
         this.boomerang.thrown === true &&
         this.enemy.positionY === this.boomerang.positionY)
     ) {
+      this.score += 1;
       this.gold += Math.floor(Math.random() * 20);
       this.enemy.die();
     }
@@ -146,14 +153,28 @@ class Game {
     }
   }
 
-  play() {
+  async play() {
+    let name = this.name;
+    let time = 0;
+    let registrationIsFinished = false;
+    this.view.gameStart();
+    do {
+      name = await this.view.registrate();
+      await this.db.addUsers(name);
+      this.name = name;
+      registrationIsFinished = true;
+    } while (!registrationIsFinished);
+    await this.view.tutorial();
     this.runInteractiveConsole();
+    setInterval(() => {
+      this.time += 1;
+    }, 1000);
     setInterval(() => {
       // Let's play!
       this.check();
       this.enemy.moveLeft();
       this.regenerateTrack();
-      this.view.render(this.track, this.gold);
+      this.view.render(this.track, this.gold, this.score, this.time);
     }, 200);
   }
 }
