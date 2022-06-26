@@ -1,24 +1,17 @@
-// Сделаем отдельный класс для отображения игры в консоли.
-// const cfonts = require('cfonts');
-
 const readline = require('node:readline');
 const { stdin: input, stdout: output } = require('node:process');
 
 const rl = readline.createInterface({ input, output });
-
+    
 class View {
-
-  constructor(track) {
-    this.trackLength = track;
-  }
-
-  render(track) {
+  render(track = [], gold = 0) {
     const yourTeamName = 'Elbrus - Tigers 2022 SPb';
 
     // Тут всё рисуем.
     console.clear();
-    // console.log(track.join(''));
+    console.log(track.map((el) => el.join(' ')).join('\n'));
     console.log('\n\n');
+    console.log(`Ваше золото: ${gold}`);
     console.log(`Created by "${yourTeamName}" with love`);
     console.log(`Вы уже убили ${score} врагов.`);
     console.log(`Набрано ${points} очков`);

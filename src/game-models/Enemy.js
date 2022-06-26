@@ -1,9 +1,11 @@
 // Враг.
 
 class Enemy {
-  constructor() {
+  constructor({ positionX, positionY }) {
     this.generateSkin();
-    this.position = 15;
+    this.speed = 1;
+    this.positionX = positionX;
+    this.positionY = positionY;
     this.isAlive = true;
   }
 
@@ -13,7 +15,7 @@ class Enemy {
   }
 
   moveLeft() {
-    if (this.isAlive) this.position -= 1;
+    if (this.isAlive) this.positionX -= this.speed;
   }
 
   die() {
