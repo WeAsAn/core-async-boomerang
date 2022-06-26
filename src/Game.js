@@ -8,33 +8,26 @@ const Enemy = require('./game-models/Enemy');
 const Boomerang = require('./game-models/Boomerang');
 const View = require('./View');
 
-// Управление.
-// Настроим соответствия нажатий на клавиши и действий в игре.
-
-// const keyboard = {
-//   a: () => this.hero.moveLeft(),
-//   d: () => this.hero.moveRight(),
-//   z: () => console.log('e'),
-// };
-
-// Какая-то функция.
-// Основной класс игры.
-// Тут будут все настройки, проверки, запуск.
-
 class Game {
   constructor({ trackLength, trackHeight }) {
     this.trackLength = trackLength;
     this.trackHeight = trackHeight;
-    this.hero = new Hero({ positionX: 1 }); // Герою можно аргументом передать бумеранг.
+    this.hero = new Hero({ positionX: 1, positionY: Math.floor(this.trackHeight / 2) });
     this.boomerang = new Boomerang();
-    this.enemy = new Enemy(this.trackLength);
+    this.enemy = new Enemy({
+      positionX: this.trackLength,
+      positionY: Math.floor(this.trackHeight / 2),
+    });
     this.view = new View();
     this.track = [];
     this.gold = 0;
+
     this.regenerateTrack();
     this.keyboard = {
       a: () => this.hero.moveLeft(),
       d: () => this.hero.moveRight(),
+      s: () => this.hero.moveDown(),
+      w: () => this.hero.moveUp(),
       z: () => {
         if (this.gold >= 200) {
           this.gold -= 200;
@@ -47,9 +40,12 @@ class Game {
         }
       },
       space: () => {
-        this.boomerang.moveRight();
-        this.boomerang.positionX = this.hero.positionX + 1;
-        this.boomerang.range = 0;
+        if (this.boomerang.thrown === false) {
+          this.boomerang.moveRight();
+          this.boomerang.positionX = this.hero.positionX + 1;
+          this.boomerang.positionY = this.hero.positionY;
+          this.boomerang.range = 0;
+        }
       },
     };
   }
@@ -86,43 +82,67 @@ class Game {
 
   check() {
     if (
+      // убийство героя
       (this.hero.positionX === this.enemy.positionX &&
         this.enemy.isAlive === true &&
-        this.hero.bubble === false) ||
+        this.hero.bubble === false &&
+        this.hero.positionY === this.enemy.positionY) ||
       (this.hero.positionX === this.enemy.positionX + 1 &&
         this.enemy.isAlive === true &&
-        this.hero.bubble === false) ||
+        this.hero.bubble === false &&
+        this.hero.positionY === this.enemy.positionY) ||
       (this.hero.positionX === this.enemy.positionX - 1 &&
         this.enemy.isAlive === true &&
-        this.hero.bubble === false)
+        this.hero.bubble === false &&
+        this.hero.positionY === this.enemy.positionY)
     ) {
       this.hero.die();
     }
     if (
-      (this.enemy.positionX === this.boomerang.positionX && this.boomerang.thrown === true) ||
-      (this.enemy.positionX === this.boomerang.positionX + 1 && this.boomerang.thrown === true) ||
-      (this.enemy.positionX === this.boomerang.positionX - 1 && this.boomerang.thrown === true)
+      // убийство врага
+      (this.enemy.positionX === this.boomerang.positionX &&
+        this.boomerang.thrown === true &&
+        this.enemy.positionY === this.boomerang.positionY) ||
+      (this.enemy.positionX === this.boomerang.positionX + 1 &&
+        this.boomerang.thrown === true &&
+        this.enemy.positionY === this.boomerang.positionY) ||
+      (this.enemy.positionX === this.boomerang.positionX - 1 &&
+        this.boomerang.thrown === true &&
+        this.enemy.positionY === this.boomerang.positionY)
     ) {
       this.gold += Math.floor(Math.random() * 20);
       this.enemy.die();
     }
+    // пускание бумеранга
     if (this.boomerang.range < this.boomerang.maxRange && this.boomerang.thrown === true) {
       this.boomerang.skin = '🌀';
       this.boomerang.moveRight();
     } else if (
+      // возвращение бумеранга
       this.boomerang.range >= this.boomerang.maxRange &&
       this.boomerang.range <= this.boomerang.maxRange * 2 - 1
     ) {
       this.boomerang.moveLeft();
     } else {
+      // убираение бумеранга
       this.boomerang.thrown = false;
     }
+    // удаление скина бумеранга
     if (this.boomerang.thrown === false) {
       this.boomerang.skin = ' ';
       this.boomerang.positionX = 0;
     }
+
+    // добавление нового врага после смерти предыдущего
     if (!this.enemy.isAlive || this.enemy.position === 0) {
-      this.enemy = new Enemy(this.trackLength);
+      this.enemy = new Enemy({
+        positionX: this.trackLength,
+        positionY: Math.floor(this.trackHeight / 2),
+      });
+    }
+    if (this.enemy.positionX < 0) {
+      this.enemy.positionX = this.trackLength;
+      this.enemy.speed += 1;
     }
   }
 
