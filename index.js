@@ -17,7 +17,7 @@ const { User, game } = require('./db/models');
 // const createUsers = (usersNames) => {
 //   User.create({ name: usersNames });
 // };
-class BaseFunctions {
+class DataBase {
   // создает игрока
 
   async addUsers(usersNames) {
@@ -98,7 +98,7 @@ class BaseFunctions {
   // drop();
 }
 
-// const newCl = new BaseFunctions();
+// const newCl = new DataBase();
 // const paris = newCl.topListUsers();
 
-module.exports = BaseFunctions;
+module.exports = DataBase;
