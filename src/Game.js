@@ -105,7 +105,6 @@ class Game {
       await this.db.addUserScore(this.name, this.score);
       await player.play('src/sounds/hero-death.wav');
       this.hero.die();
-      music.kill();
     }
     if (
       // убийство врага
@@ -145,14 +144,15 @@ class Game {
     }
 
     // добавление нового врага после смерти предыдущего
-    if (!this.enemy.isAlive || this.enemy.position === 0) {
+    if (!this.enemy.isAlive || this.enemy.positionX === 0) {
       this.enemy = new Enemy({
         positionX: this.trackLength,
-        positionY: Math.floor(this.trackHeight / 2),
+        positionY: Math.floor(Math.random() * this.trackHeight),
       });
     }
     if (this.enemy.positionX < 0) {
       this.enemy.positionX = this.trackLength;
+      this.enemy.positionY = Math.floor(Math.random() * this.trackHeight);
       this.enemy.speed += 1;
     }
   }
@@ -169,7 +169,6 @@ class Game {
       registrationIsFinished = true;
     } while (!registrationIsFinished);
     await this.view.tutorial();
-    const music = player.play('src/sounds/wow.wav');
     this.runInteractiveConsole();
     setInterval(() => {
       this.time += 1;
