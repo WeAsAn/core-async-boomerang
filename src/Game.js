@@ -7,7 +7,7 @@ const Hero = require('./game-models/Hero');
 const Enemy = require('./game-models/Enemy');
 const Boomerang = require('./game-models/Boomerang');
 const View = require('./View');
-const { REAL } = require('sequelize');
+const player = require('play-sound')((opts = {}));
 
 class Game {
   constructor({ trackLength, trackHeight }) {
@@ -38,6 +38,7 @@ class Game {
           this.gold -= 200;
           this.hero.bubble = true;
           this.hero.skin = '😎';
+          player.play('src/sounds/bubble.wav');
           setTimeout(() => {
             this.hero.bubble = false;
             this.hero.skin = '🤠';
@@ -102,7 +103,9 @@ class Game {
         this.hero.positionY === this.enemy.positionY)
     ) {
       await this.db.addUserScore(this.name, this.score);
+      await player.play('src/sounds/hero-death.wav');
       this.hero.die();
+      music.kill();
     }
     if (
       // убийство врага
@@ -119,6 +122,7 @@ class Game {
       this.score += 1;
       this.gold += Math.floor(Math.random() * 20);
       this.enemy.die();
+      player.play('src/sounds/death.wav');
     }
     // пускание бумеранга
     if (this.boomerang.range < this.boomerang.maxRange && this.boomerang.thrown === true) {
@@ -165,6 +169,7 @@ class Game {
       registrationIsFinished = true;
     } while (!registrationIsFinished);
     await this.view.tutorial();
+    const music = player.play('src/sounds/wow.wav');
     this.runInteractiveConsole();
     setInterval(() => {
       this.time += 1;
