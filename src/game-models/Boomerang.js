@@ -4,23 +4,28 @@
 
 class Boomerang {
   constructor() {
-    this.skin = '🌀';
-    this.position = 0;
-  }
-
-  fly() {
-    this.moveRight();
-    this.moveLeft();
+    this.skin = ' ';
+    this.positionX = 0;
+    this.positionY = 5;
+    this.range = 0;
+    this.maxRange = 7;
+    this.thrown = false;
   }
 
   moveLeft() {
     // Идём влево.
-    this.position -= 1;
+    if (this.positionX >= 0) {
+      this.thrown = true;
+      this.positionX -= 1;
+      this.range += 1;
+    }
   }
 
   moveRight() {
     // Идём вправо.
-    this.position += 1;
+    this.thrown = true;
+    this.positionX += 1;
+    this.range += 1;
   }
 }
 
