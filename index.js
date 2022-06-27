@@ -77,8 +77,13 @@ class DataBase {
 
     // return topUser
     //   console.log(topUser);
-    // const rsult = JSON.stringify(topUser);
-    console.log(topUser);
+    const rsult = topUser
+      .map(
+        (el) =>
+          `\x1B[33m${Object.values(el)[0]}\x1B[0m - \x1B[31m${Object.values(el)[1]}\x1B[0m врагов`,
+      )
+      .join('\n');
+    return rsult;
   }
 
   // topListUsers();

@@ -161,7 +161,10 @@ class Game {
     let name = this.name;
     let time = 0;
     let registrationIsFinished = false;
-    this.view.gameStart();
+    if (process.argv[2] === 'stats') {
+      console.clear();
+      this.db.topListUsers().then((data) => console.log(data));
+    } else {
     do {
       name = await this.view.registrate();
       await this.db.addUsers(name);
@@ -180,10 +183,8 @@ class Game {
       this.regenerateTrack();
       this.view.render(this.track, this.gold, this.score, this.time);
     }, 200);
+    }
   }
 }
-
-const game = new Game({ trackLength: 32, trackHeight: 20 });
-game.play();
 
 module.exports = Game;
