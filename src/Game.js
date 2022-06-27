@@ -7,7 +7,7 @@ const Hero = require('./game-models/Hero');
 const Enemy = require('./game-models/Enemy');
 const Boomerang = require('./game-models/Boomerang');
 const View = require('./View');
-const { REAL } = require('sequelize');
+const player = require('play-sound')((opts = {}));
 
 class Game {
   constructor({ trackLength, trackHeight }) {
@@ -38,6 +38,7 @@ class Game {
           this.gold -= 200;
           this.hero.bubble = true;
           this.hero.skin = '😎';
+          player.play('src/sounds/bubble.wav');
           setTimeout(() => {
             this.hero.bubble = false;
             this.hero.skin = '🤠';
@@ -102,6 +103,7 @@ class Game {
         this.hero.positionY === this.enemy.positionY)
     ) {
       await this.db.addUserScore(this.name, this.score);
+      await player.play('src/sounds/hero-death.wav');
       this.hero.die();
     }
     if (
@@ -119,6 +121,7 @@ class Game {
       this.score += 1;
       this.gold += Math.floor(Math.random() * 20);
       this.enemy.die();
+      player.play('src/sounds/death.wav');
     }
     // пускание бумеранга
     if (this.boomerang.range < this.boomerang.maxRange && this.boomerang.thrown === true) {
@@ -141,14 +144,15 @@ class Game {
     }
 
     // добавление нового врага после смерти предыдущего
-    if (!this.enemy.isAlive || this.enemy.position === 0) {
+    if (!this.enemy.isAlive || this.enemy.positionX === 0) {
       this.enemy = new Enemy({
         positionX: this.trackLength,
-        positionY: Math.floor(this.trackHeight / 2),
+        positionY: Math.floor(Math.random() * this.trackHeight),
       });
     }
     if (this.enemy.positionX < 0) {
       this.enemy.positionX = this.trackLength;
+      this.enemy.positionY = Math.floor(Math.random() * this.trackHeight);
       this.enemy.speed += 1;
     }
   }
@@ -157,7 +161,10 @@ class Game {
     let name = this.name;
     let time = 0;
     let registrationIsFinished = false;
-    this.view.gameStart();
+    if (process.argv[2] === 'stats') {
+      console.clear();
+      this.db.topListUsers().then((data) => console.log(data));
+    } else {
     do {
       name = await this.view.registrate();
       await this.db.addUsers(name);
@@ -176,10 +183,8 @@ class Game {
       this.regenerateTrack();
       this.view.render(this.track, this.gold, this.score, this.time);
     }, 200);
+    }
   }
 }
-
-const game = new Game({ trackLength: 32, trackHeight: 20 });
-game.play();
 
 module.exports = Game;

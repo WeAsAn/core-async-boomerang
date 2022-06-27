@@ -21,7 +21,7 @@ class DataBase {
   // создает игрока
 
   async addUsers(usersNames) {
-    const createUsers = await User.create({ name: usersNames });
+    const createUsers = await User.findOrCreate({ where: { name: usersNames } });
   }
 
   // добавляет счет игроку
@@ -29,7 +29,7 @@ class DataBase {
     const userFind = await User.findOne({
       where: { name: usersNames },
     });
-      //   console.log(userFind.id, userFind.name);
+    //   console.log(userFind.id, userFind.name);
     const newUserScore = await game.create({
       game_result: userScore,
       user_id: userFind.id,
@@ -51,7 +51,7 @@ class DataBase {
     const userFind = await User.findOne({
       where: { name: usersNames },
     });
-      //   console.log(userFind.id, userFind.name);
+    //   console.log(userFind.id, userFind.name);
     const newUserScore = await game.create({
       game_result: userScore,
       user_id: userFind.id,
@@ -64,21 +64,26 @@ class DataBase {
   // получаем список игроков (я пыталась написать через findAll попробую еще )
   async topListUsers() {
     const topUser = await sequelize.query(
-      'SELECT name, game_result FROM games JOIN \"Users\" ON \"Users\".id = games.user_id ORDER BY game_result DESC LIMIT(3)',
+      'SELECT name, game_result FROM games JOIN "Users" ON "Users".id = games.user_id ORDER BY game_result DESC LIMIT(3)',
       {
         type: QueryTypes.SELECT,
       },
     );
-      //   const topThree = await game.findAll({
-      //     // attributes: ['game_result'],
-      //     // order: ['game_result', 'DESC'],
-      //     // limit: 3,
-      //   });
+    //   const topThree = await game.findAll({
+    //     // attributes: ['game_result'],
+    //     // order: ['game_result', 'DESC'],
+    //     // limit: 3,
+    //   });
 
     // return topUser
     //   console.log(topUser);
-    // const rsult = JSON.stringify(topUser);
-    console.log(topUser);
+    const rsult = topUser
+      .map(
+        (el) =>
+          `\x1B[33m${Object.values(el)[0]}\x1B[0m - \x1B[31m${Object.values(el)[1]}\x1B[0m врагов`,
+      )
+      .join('\n');
+    return rsult;
   }
 
   // topListUsers();

@@ -1,5 +1,6 @@
 const readline = require('node:readline');
 const { stdin: input, stdout: output } = require('node:process');
+const { resolve } = require('node:path');
 
 const rl = readline.createInterface({ input, output });
 
@@ -29,7 +30,7 @@ class View {
   registrate() {
     return new Promise((resolve) => {
       console.clear();
-      rl.question('Введите Ваше имя: ', (userName) => {
+      rl.question('\x1B[32mВведите Ваше имя: \x1B[0m', (userName) => {
         resolve(userName);
       });
     });
@@ -38,12 +39,14 @@ class View {
   tutorial() {
     return new Promise((resolve) => {
       console.clear();
-      console.log('управление на клавиатуре');
-      console.log('1. Вправо - клавиша "d", влево - клавиша "a"');
-      console.log('2. Вверх - клавиша "w", вниз - клавиша "s"');
-      console.log('3. Метнуть бумеранг "пробел"');
-      console.log('4. За 200 золота Вы можете купить неуязвимость на 5 секунд (клавиша "z")');
-      rl.question('Нажмите Enter для начала игры \n', (userChoise) => {
+      console.log('\x1B[32mУправление:\x1B[0m');
+      console.log('\x1B[32m1. Вправо - клавиша "d", влево - клавиша "a"\x1B[0m');
+      console.log('\x1B[32m2. Вверх - клавиша "w", вниз - клавиша "s"\x1B[0m');
+      console.log('\x1B[32m3. Метнуть бумеранг "пробел"\x1B[0m');
+      console.log(
+        '\x1B[33m4. За 200 золота Вы можете купить неуязвимость на 5 секунд (клавиша "z")\x1B[0m',
+      );
+      rl.question('\x1B[31mНажмите Enter для начала игры \n\x1B[0m', (userChoise) => {
         resolve(userChoise);
       });
     });
